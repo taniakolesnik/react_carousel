@@ -19,7 +19,6 @@ const Carousel: React.FC<State> = ({
   infinite,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [stepManual, setStepManual] = useState(step);
   const [frameSizeManual, setFrameSizeManual] = useState(frameSize);
   const [itemWidthManual, setItemWidthManual] = useState(itemWidth);
@@ -27,23 +26,23 @@ const Carousel: React.FC<State> = ({
   const translateDistance = itemWidthManual * currentIndex;
   const frameWidth = frameSizeManual * itemWidthManual;
 
-  const move = (movement: () => void) => {
-    setTimeout(movement, animationDuration);
+  const move = (direction: () => void) => {
+    setTimeout(direction, animationDuration);
   };
 
   const prev = () => {
-    if (currentIndex !== 0) {
-      setCurrentIndex(() => currentIndex + stepManual);
+    if (currentIndex > 0) {
+      setCurrentIndex(() => currentIndex - stepManual);
     } else {
       if (infinite) {
-        setCurrentIndex(() => -images.length + stepManual);
+        setCurrentIndex(() => images.length - stepManual);
       }
     }
   };
 
   const next = () => {
-    if (currentIndex > -images.length + stepManual) {
-      setCurrentIndex(() => currentIndex - stepManual);
+    if (currentIndex < images.length - 1) {
+      setCurrentIndex(() => currentIndex + stepManual);
     } else {
       if (infinite) {
         setCurrentIndex(() => 0);
@@ -82,7 +81,7 @@ const Carousel: React.FC<State> = ({
           }}
         />
 
-        <label htmlFor="itemId">Frame Size</label>
+        <label htmlFor="itemId">Item Width</label>
         <input
           id="itemId"
           type="number"
@@ -100,7 +99,7 @@ const Carousel: React.FC<State> = ({
       >
         <ul
           className="Carousel__list"
-          style={{ transform: `translate(${translateDistance}px)` }}
+          style={{ transform: `translate(${-translateDistance}px)` }}
         >
           {images.map((image, index) => (
             <li key={index}>
