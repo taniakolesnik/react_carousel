@@ -1,26 +1,122 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Carousel.scss';
 
-const Carousel: React.FC = () => (
-  <div className="Carousel">
-    <ul className="Carousel__list">
-      <li>
-        <img src="./img/1.png" alt="1" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="2" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="3" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="4" />
-      </li>
-    </ul>
+interface State {
+  images: string[];
+  step: number;
+  frameSize: number;
+  itemWidth: number;
+  animationDuration: number;
+  infinite: boolean;
+}
 
-    <button type="button">Prev</button>
-    <button type="button">Next</button>
-  </div>
-);
+const Carousel: React.FC<State> = ({
+  images,
+  step,
+  frameSize,
+  itemWidth,
+  animationDuration,
+  infinite,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [stepManual, setStepManual] = useState(step);
+  const [frameSizeManual, setFrameSizeManual] = useState(frameSize);
+  const [itemWidthManual, setItemWidthManual] = useState(itemWidth);
+
+  const translateDistance = itemWidthManual * currentIndex;
+  const frameWidth = frameSizeManual * itemWidthManual;
+
+  const move = (movement: () => void) => {
+    setTimeout(movement, animationDuration);
+  };
+
+  const prev = () => {
+    if (currentIndex !== 0) {
+      setCurrentIndex(() => currentIndex + stepManual);
+    } else {
+      if (infinite) {
+        setCurrentIndex(() => -images.length + stepManual);
+      }
+    }
+  };
+
+  const next = () => {
+    if (currentIndex > -images.length + stepManual) {
+      setCurrentIndex(() => currentIndex - stepManual);
+    } else {
+      if (infinite) {
+        setCurrentIndex(() => 0);
+      }
+    }
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+        }}
+      >
+        <label htmlFor="stepId">Step</label>
+        <input
+          id="stepId"
+          type="number"
+          defaultValue={3}
+          onChange={e => {
+            setStepManual(Number(e.target.value));
+          }}
+        />
+
+        <label htmlFor="frameId">Frame Size</label>
+        <input
+          id="frameId"
+          type="number"
+          name="frameId"
+          defaultValue={3}
+          onChange={e => {
+            setFrameSizeManual(Number(e.target.value));
+          }}
+        />
+
+        <label htmlFor="itemId">Frame Size</label>
+        <input
+          id="itemId"
+          type="number"
+          name="itemId"
+          defaultValue={130}
+          // step={130}
+          onChange={e => {
+            setItemWidthManual(Number(e.target.value));
+          }}
+        />
+      </div>
+      <div
+        className="Carousel"
+        style={{ width: `${frameWidth}px`, overflow: 'hidden' }}
+      >
+        <ul
+          className="Carousel__list"
+          style={{ transform: `translate(${translateDistance}px)` }}
+        >
+          {images.map((image, index) => (
+            <li key={index}>
+              <img width={`${itemWidthManual}`} src={image} alt={image} />
+            </li>
+          ))}
+        </ul>
+        <button type="button" onClick={() => move(prev)}>
+          Prev
+        </button>
+        <button data-cy="next" type="button" onClick={() => move(next)}>
+          Next
+        </button>
+      </div>
+    </>
+  );
+};
 
 export default Carousel;
