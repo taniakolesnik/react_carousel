@@ -41,7 +41,7 @@ const Carousel: React.FC<State> = ({
   };
 
   const next = () => {
-    if (currentIndex < images.length - 1) {
+    if (currentIndex < images.length - stepManual) {
       setCurrentIndex(() => currentIndex + stepManual);
     } else {
       if (infinite) {
